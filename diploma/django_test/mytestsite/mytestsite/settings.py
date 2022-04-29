@@ -22,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-iujns*4!x&(*=fudjfs8^fe+kpqr24yth0ih__4^wzsh1z(v&5'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'websitre.apps.WebsitreConfig',
 ]
 
 MIDDLEWARE = [
