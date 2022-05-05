@@ -3,12 +3,13 @@
 
 {% block content %}
 
-<form action="/" method="POST" class="form">
+<form  method="POST" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
     {% bootstrap_form form %}
 
     {% bootstrap_button button_type="submit" button_class='btn-primary' content="Proceed" %}
 </form>
+
 
 {% endblock %}

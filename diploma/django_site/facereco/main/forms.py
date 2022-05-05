@@ -5,4 +5,8 @@ from .models import Result
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Result
-        fields = '__all__'
+        fields = [
+            'title',
+            'first_image',
+            'second_image'
+        ]
