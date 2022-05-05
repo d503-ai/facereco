@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 # Используется для обнаружения лица человека
 import face_recognition as fr
 
+
+
 # Загрузка фото
 image1 = fr.load_image_file("photo_1.jpg")
 
@@ -18,10 +20,6 @@ plt.imshow(gray_img, cmap='gray')
 haar_face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 faces = haar_face_cascade.detectMultiScale(gray_img)
 print('Faces found: ', len(faces))
-
-# Процедура выделения лиц в рамки. На данный момент нерабочая
-for (x, y, w, h) in faces:
-    cv2.rectangle(image1, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 # Вывод изображения с выделенными лицами
 plt.imshow(image1)

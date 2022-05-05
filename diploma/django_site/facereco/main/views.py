@@ -1,30 +1,31 @@
 from django.shortcuts import render, redirect
-from .models import Task
-from .forms import TaskForm
+from .forms import ImageForm
 
 
+'''
+Home page - Uploading the images
+'''
 def index(request):
-    tasks = Task.objects.all()
-    return render(request, 'main/index.html', {'title': 'Home', 'tasks': tasks})
-
-
-def about(request):
-    return render(request, 'main/about.html', {'title': 'About'})
-
-
-def create(request):
-    error = ''
+    context = {'title': 'Facereco - Home'}
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = ImageForm(request.POST, request.FILES)
+        # setattr(form, 'title', 'title ' + str(form.objects.get('id')))
         if form.is_valid():
             form.save()
-            return redirect('home')
-        else:
-            error = 'Form is not valid'
+            img_obj = form.instance
+            context.update({'form': form, 'img_obj': img_obj})
+            return redirect('result')
+    else:
+        form = ImageForm()
 
-    form = TaskForm()
-    context = {
-        'form': form,
-        'error': error
-    }
-    return render(request, 'main/create.html', {'title': 'Create Task', 'context': context})
+    context.update({'form': form, 'img_obj': None})
+    return render(request, 'main/index.html', context)
+
+
+
+'''
+Result page - Executing Neural Network functions and showing the result
+'''
+def result(request):
+    context = {'title': 'Facereco - Result'}
+    return render(request, 'main/result.html', context)

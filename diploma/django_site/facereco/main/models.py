@@ -1,14 +1,11 @@
 from django.db import models
 
 
-class Task(models.Model):
-    title = models.CharField('Name', max_length=50)
-    task = models.TextField('Description')
+class Result(models.Model):
+    title = models.CharField(max_length=200)
+    first_image = models.ImageField()
+    second_image = models.ImageField()
+    date_created = models.DateTimeField(auto_now_add=True)
 
-    # Переопределение инициализации объекта класса модели
     def __str__(self):
         return self.title
-
-    class Meta:
-        verbose_name = "Task"
-        verbose_name_plural = "Tasks"

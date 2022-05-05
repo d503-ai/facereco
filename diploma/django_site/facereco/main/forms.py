@@ -1,18 +1,12 @@
-from .models import Task
-from django.forms import ModelForm, TextInput, Textarea
+from django import forms
+from .models import Result
 
 
-class TaskForm(ModelForm):
+class ImageForm(forms.ModelForm):
     class Meta:
-        model = Task
-        fields = ['title', 'task']
-        widgets = {
-            'title': TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter Task name'
-            }),
-            'task': Textarea(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter description for task'
-            }),
-        }
+        model = Result
+        fields = [
+            'title',
+            'first_image',
+            'second_image'
+        ]

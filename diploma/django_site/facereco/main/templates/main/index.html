@@ -1,23 +1,15 @@
-{% extends 'main/base.html' %}
-
-{% block title %}
-{{ title }}
-{% endblock %}
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
 {% block content %}
-    {% if tasks %}
-        {% for element in tasks %}
-            <div class="alert alert-warning mt-2">
-                <h3>
-                    {{ element.title }}
-                </h3>
-                <p>
-                    {{ element.task }}
-                </p>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>There're no tasks right now</p>
-    {% endif %}
-{% endblock %}
 
+<form  method="POST" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+
+    {% bootstrap_form form %}
+
+    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Proceed" %}
+</form>
+
+
+{% endblock %}
