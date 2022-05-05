@@ -1,8 +1,4 @@
-{% extends 'main/base.html' %}
-
-{% block title %}
-{{ title }}
-{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
     {% if tasks %}
@@ -20,4 +16,3 @@
         <p>There're no tasks right now</p>
     {% endif %}
 {% endblock %}
-
