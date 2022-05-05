@@ -13,7 +13,7 @@ if __name__ == '__main__':
     detector = dlib.get_frontal_face_detector()
 
     # Загрузка первого фото
-    img = io.imread('net.jpg')
+    img = io.imread('photo_1.jpg')
 
     # Отображение фото
     win1 = dlib.image_window()
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     print(face_descriptor1)
 
     # Загрузка второго фото
-    img = io.imread('photo_1.jpg')
+    img = io.imread('photo_3.jpg')
     win2 = dlib.image_window()
     win2.clear_overlay()
     win2.set_image(img)
