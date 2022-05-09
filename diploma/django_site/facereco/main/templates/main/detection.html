@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+<form  method="POST" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+
+    {% bootstrap_form form exclude='second_image' %}
+
+    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Proceed" %}
+</form>
+
+
+{% endblock %}

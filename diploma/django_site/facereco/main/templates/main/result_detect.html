@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div>
+    <img src="{{ obj.first_image.url }}" width="300" class="img-responsive"/>
+    <p>Faces on image: {{ data.faces }}</p>
+</div>
+
+{% endblock content %}
