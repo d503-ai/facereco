@@ -3,9 +3,35 @@
 {% load static %}
 
 {% block content %}
-<div>
-    <img src="{{ obj.first_image.url }}" width="300" class="img-responsive"/>
-    <p>Faces on image: {{ data.faces }}</p>
+
+{% if faces %}
+    {% for dat in data %}
+        <div class="d-flex justify-content-center">
+            <div class="px-md-5 text-center">
+                <h2>{{ dat.title }}</h2>
+                <div class="center">
+                    <p class="display-5">Faces on image: {{ faces }}</p>
+                </div>
+                <div class="center">
+                    <p class="display-5">Execute time: {{ dat.time }} seconds</p>
+                </div>
+                <div>
+                    <img src="{{ dat.detect_image.url }}" width="450" class="img-responsive"/>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if not faces %}
+<div class="d-flex justify-content-center">
+    <div class="px-md-5 text-center">
+        <h3>No faces were detected</h3>
+    </div>
+</div>
+{% endif %}
+<div class="text-center my-md-3 pl-md-3">
+    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to Home</a>
 </div>
 
 {% endblock content %}
