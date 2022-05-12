@@ -29,8 +29,7 @@ def dlibFace(image, path):
             # convert the facial landmark (x, y)-coordinates to a NumPy
             # array
             shape = predictor(gray, det)
-            face_descriptor = facerec.compute_face_descriptor(img, shape)
-            shape = face_utils.shape_to_np(shape)
+            shape2 = face_utils.shape_to_np(shape)
             # convert dlib's rectangle to a OpenCV-style bounding box
             # [i.e., (x, y, w, h)], then draw the face bounding box
             (x, y, w, h) = face_utils.rect_to_bb(det)
@@ -40,10 +39,13 @@ def dlibFace(image, path):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             # loop over the (x, y)-coordinates for the facial landmarks
             # and draw them on the image
-            for (x, y) in shape:
+            for (x, y) in shape2:
                 cv2.circle(img, (x, y), 1, (0, 0, 255), 2)
     else:
-        return {}
+        return {'path': path, 'facedesc': None, 'faces': len(dets),
+                'time': float("{:.4f}".format(time.time() - start_time))}
+    face_descriptor = facerec.compute_face_descriptor(img, shape)
     # show the output image with the face detections + facial landmarks
     dlib.save_image(img, str(BASE_DIR) + "/static/images/" + path)
-    return {'path': path, 'facedesc': face_descriptor, 'faces': len(dets), 'time': time.time() - start_time}
+    return {'path': path, 'facedesc': face_descriptor, 'faces': len(dets),
+            'time': float("{:.4f}".format(time.time() - start_time))}

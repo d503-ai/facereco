@@ -2,30 +2,63 @@
 
 {% block content %}
 
-
-
-
-<div class="d-flex justify-content-center">
-    <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="center">
-            <p class="display-5">Execution time: {{ data1.time }} seconds</p>
+{% for dat in data %}
+    <div class="text-center">
+        <h1>{{ dat.title }}</h1>
+    </div>
+    {% if dat.faces and dat.faces < 2%}
+    <div class="d-flex justify-content-center">
+        <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div>
+                <img src="{{ dat.recognition_image_1.url }}" height="250" class="img-responsive"/>
+            </div>
         </div>
-        <div>
-            <img src="{{ data.first_image.url }}" width="250" class="img-responsive"/>
+        <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+            <div>
+                <img src="{{ dat.recognition_image_2.url }}" width="250" class="img-responsive"/>
+            </div>
         </div>
     </div>
-    <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="text-center">
-            <p class="display-5">Execution time: {{ data2.time }} seconds</p>
-        </div>
-        <div>
-            <img src="{{ data.second_image.url }}" width="250" class="img-responsive"/>
+    <div class="text-center">
+        <p class="display-5">Execution time: {{ dat.time }} seconds</p>
+    </div>
+    <div class="text-center">
+        <p class="display-5">Accuracy (euclidean value): {{ dat.accuracy }}</p>
+    </div>
+    {% else %}
+    <div class="d-flex justify-content-center">
+        <div class="px-md-5 text-center">
+            <h3>No face were detected or too many faces</h3>
         </div>
     </div>
-</div>
-<div class="text-center my-md-3 pl-md-3">
-    <h2>{{ pers }}</h2>
-</div>
+    {% endif %}
+{% endfor %}
+<br>
+<table class="table table-sm" >
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Speed</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dat in data %}
+    <tr>
+      <th scope="row">{{dat.title}}</th>
+      <td>{{dat.time}}</td>
+      <th>{{dat.accuracy}}</th>
+        {% if dat.accuracy < 0.6%}
+            <td>The same persons</td>
+        {% else %}
+            <td>Different</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
 <div class="text-center my-md-3 pl-md-3">
     <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to Home</a>
 </div>

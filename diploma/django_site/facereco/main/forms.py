@@ -16,7 +16,8 @@ class NeuralForm(forms.ModelForm):
         model = Neural
         fields = [
             'title',
-            'recognition_image',
+            'recognition_image_1',
+            'recognition_image_2',
             'detect_image',
             'time',
             'accuracy',

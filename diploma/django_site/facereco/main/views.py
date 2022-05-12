@@ -65,50 +65,102 @@ def resultDetect(request):
     :param data:    transferred data
     :return:        the view of page
     """
+    context = {'title': 'Result'}
+
     rec = Record.objects.last()
     dlib = dlibFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
                     "dlib_detector.jpg")
-    opencv = OpenCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
+    opencv = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
                         "opencv_detector.jpg")
-    if dlib:
-        dlib_mod = Neural(title="Dlib", record=rec, detect_image=dlib['path'], time=dlib['time'])
+    if dlib and opencv:
+        dlib_mod = Neural(title="Dlib",
+                          record=rec,
+                          detect_image=dlib['path'],
+                          time=dlib['time'],
+                          faces=dlib['faces'])
         dlib_mod.save()
-
-    if opencv:
-        opencv_mod = Neural(title="OpenCV", record=rec, detect_image=opencv['path'], time=opencv['time'])
+        opencv_mod = Neural(title="OpenCV",
+                            record=rec,
+                            detect_image=opencv['path'],
+                            time=opencv['time'],
+                            faces=opencv['faces'])
         opencv_mod.save()
 
+        context.update({'data': {dlib_mod, opencv_mod}, 'obj': rec})
+
     rec.save()
-    context = {'title': 'Result', 'data': {dlib_mod, opencv_mod}, 'obj': rec, 'faces': dlib['faces']}
     return render(request, 'main/result_detect.html', context)
 
 
 def resultRecon(request):
     """
-    Result page - Executing Neural Network functions and showing the result
+    Result page - Executing Neural Network for recognition of faces
+    :param request: request data
+    :param data:    transferred data
+    :return:        the view of page
     """
+    context = {'title': 'Result'}
     rec = Record.objects.last()
-    data1 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
-                     "dlib_recon_1.jpg")
-    data2 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
-                     "dlib_recon_2.jpg")
-    setattr(rec, 'first_image', data1['path'])
-    setattr(rec, 'second_image', data2['path'])
-    rec.save()
-    a = distance.euclidean(data1['facedesc'], data2['facedesc'])
-    if a > 0.6:
-        pers = "Different persons"
-    else:
-        pers = "The same persons"
-    context = {'title': 'Result', 'pers': pers, 'data': rec, 'data1': data1, 'data2': data2}
+    dlib = reconExec(rec, "Dlib")
+    opencv = reconExec(rec, "OpenCV")
+
+    if dlib and opencv:
+        dlib_mod = Neural.objects.create(title="Dlib",
+                                         record=rec,
+                                         recognition_image_1=dlib[0]['path'],
+                                         recognition_image_2=dlib[1]['path'],
+                                         accuracy=dlib[2],
+                                         time=dlib[3],
+                                         faces=dlib[0]['faces'])
+        dlib_mod.save()
+        opencv_mod = Neural.objects.create(title="OpenCV",
+                                           record=rec,
+                                           recognition_image_1=opencv[0]['path'],
+                                           recognition_image_2=opencv[1]['path'],
+                                           accuracy=opencv[2],
+                                           time=opencv[3],
+                                           faces=opencv[0]['faces'])
+        opencv_mod.save()
+
+        context.update({'data': {dlib_mod, opencv_mod}, 'obj': rec})
+
     return render(request, 'main/result_recon.html', context)
 
 
 def pageNotFound(request, exception):
     """
-
+    404 page view
     :param request:
     :param exception:
     :return:
     """
     return render(request, "404.html")
+
+
+def reconExec(rec, mode):
+    """
+    Method for recognition of faces
+    :param rec:
+    :param mode:
+    :return:
+    """
+    start_time = time.time()
+    if mode == "Dlib":
+        data1 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
+                         "dlib_recon_1.jpg")
+        data2 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
+                         "dlib_recon_2.jpg")
+    elif mode == "OpenCV":
+        data1 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
+                           "opencv_recon_1.jpg")
+        data2 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
+                           "opencv_recon_2.jpg")
+    else:
+        return {}
+    if data1 and data2:
+        try:
+            a = distance.euclidean(data1['facedesc'], data2['facedesc'])
+        except:
+            return data1, data2, 0.0, float("{:.4f}".format(time.time() - start_time))
+
+    return data1, data2, a, float("{:.4f}".format(time.time() - start_time))
