@@ -17,10 +17,27 @@
     <title>{% block title %}{{ title }}{% endblock title %}</title>
 </head>
 <body>
-    <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-        <img class="bi me-2" width="32" height="32" src="{% static 'images/icons/bezier.svg' %}"/>
-        <span class="fs-4">Facereco</span>
-      </a>
+<div class="container">
+    <header class="p-3 mb-3 border-bottom align-items-center justify-content-center ">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center">
+                <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0">
+                    <img class="bi me-2" width="32" height="32" src="{% static 'images/icons/bezier.svg' %}"/>
+
+                </a>
+                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                    <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 link-dark">Home</a></li>
+                    <li class="nav-item"><a href="{% url 'recognize' %}" class="nav-link px-2 link-dark">Recognition
+                        Faces</a></li>
+                    <li class="nav-item"><a href="{% url 'detection' %}" class="nav-link px-2 link-dark">Detection
+                        Faces</a>
+                    </li>
+                </ul>
+                <!---<div class="col-md-3 text-end">
+                    <button type="button" class="btn btn-outline-primary me-2">Login</button>
+                    <button type="button" class="btn btn-primary">Sign-up</button>
+                </div>--->
+            </div>
+        </div>
     </header>
+</div>

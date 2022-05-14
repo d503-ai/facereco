@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for dat in data %}
+        <div class="d-flex justify-content-center">
+            <div class="px-md-5 text-center">
+                <h2>{{ dat.title }}</h2>
+                {% if dat.faces %}
+                <div class="center">
+                    <p class="display-5">Faces on image: {{ dat.faces }}</p>
+                </div>
+                <div class="center">
+                    <p class="display-5">Execute time: {{ dat.time }} seconds</p>
+                </div>
+                <div>
+                    <img src="{{ dat.detect_image.url }}" width="450" class="img-responsive"/>
+                </div>
+                {% else %}
+                    <h3>No faces were detected</h3>
+                {% endif %}
+            </div>
+        </div>
+{% endfor %}
+<br>
+<table class="table table-sm" >
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Speed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dat in data %}
+    <tr>
+      <th scope="row">{{dat.title}}</th>
+      <td>{{dat.time}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+<div class="text-center my-md-3 pl-md-3">
+    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to Home</a>
+</div>
+
+{% endblock content %}

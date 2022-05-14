@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-66%3=_m(-zxpd+(1$)nye62wngeeomgea=5h*lzlu!84c&%y6a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     'main.apps.MainConfig',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -110,7 +111,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-MEDIA_URL = '/images/'
+MEDIA_URL = 'images/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),

@@ -1,4 +1,5 @@
 from django.contrib import admin
-from .models import Result
+from .models import Record, Neural
 
-admin.site.register(Result)
+admin.site.register(Record)
+admin.site.register(Neural)
