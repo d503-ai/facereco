@@ -127,16 +127,6 @@ def resultRecon(request):
     return render(request, 'main/result_recon.html', context)
 
 
-def pageNotFound(request, exception):
-    """
-    404 page view
-    :param request:
-    :param exception:
-    :return:
-    """
-    return render(request, "404.html")
-
-
 def reconExec(rec, mode):
     """
     Method for recognition of faces
