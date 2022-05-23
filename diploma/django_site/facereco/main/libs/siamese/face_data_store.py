@@ -24,10 +24,10 @@ Usage: python -m face_recog.face_data_store
 
 import sys
 
-from exceptions import DatabaseFileNotFound, InvalidCacheInitializationData
-from json_persistent_storage import JSONStorage
-from logger import LoggerFactory
-from simple_cache import SimpleCache
+from .exceptions import DatabaseFileNotFound, InvalidCacheInitializationData
+from .json_persistent_storage import JSONStorage
+from .logger import LoggerFactory
+from .simple_cache import SimpleCache
 
 # Load the custom logger
 logger = None

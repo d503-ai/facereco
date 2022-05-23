@@ -13,10 +13,10 @@ import os
 import sys
 from typing import Dict, List
 
-from exceptions import DatabaseFileNotFound
-from logger import LoggerFactory
-from persistent_storage import PersistentStorage
-from validators import path_exists
+from .exceptions import DatabaseFileNotFound
+from .logger import LoggerFactory
+from .persistent_storage import PersistentStorage
+from .validators import path_exists
 
 # Load the custom logger
 logger = None

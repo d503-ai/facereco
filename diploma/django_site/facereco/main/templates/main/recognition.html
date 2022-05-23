@@ -2,13 +2,21 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-
+<div>
+    Для розпізнання обличчя оберіть два зображення.
+    <br>
+    Обмеження щодо завдання:
+    <ul>
+        <li>1. Кількість обличчя - 1.</li>
+        <li>2. Якщо на зображені нема обличь або обличь більш ніж 1, то буде виконано виключення.</li>
+    </ul>
+</div>
 <form  method="POST" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
     {% bootstrap_form form %}
 
-    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Proceed" %}
+    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Виконати" %}
 </form>
 
 

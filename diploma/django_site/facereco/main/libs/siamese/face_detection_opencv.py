@@ -15,10 +15,10 @@ from typing import List
 
 import cv2
 
-from face_recog.exceptions import InvalidImage, ModelFileMissing
-from face_recog.face_detector import FaceDetector
-from face_recog.logger import LoggerFactory
-from face_recog.validators import is_valid_img
+from .exceptions import InvalidImage, ModelFileMissing
+from .face_detector import FaceDetector
+from .logger import LoggerFactory
+from .validators import is_valid_img
 
 # Load the custom logger
 logger = None

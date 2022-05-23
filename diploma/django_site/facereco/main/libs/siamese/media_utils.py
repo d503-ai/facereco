@@ -3,8 +3,8 @@ from typing import List, Tuple
 import cv2
 import dlib
 
-from exceptions import InvalidImage
-from validators import is_valid_img
+from .exceptions import InvalidImage
+from .validators import is_valid_img
 
 
 def convert_to_rgb(image):

@@ -16,9 +16,9 @@ Usage: python -m face_recog.simple_cache
 import sys
 from typing import Dict, List, Tuple
 
-from exceptions import InvalidCacheInitializationData, NotADictionary
-from in_memory_cache import InMemoryCache
-from logger import LoggerFactory
+from .exceptions import InvalidCacheInitializationData, NotADictionary
+from .in_memory_cache import InMemoryCache
+from .logger import LoggerFactory
 
 # Load the custom logger
 logger = None

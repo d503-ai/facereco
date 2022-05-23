@@ -18,10 +18,10 @@ from typing import List
 
 from mtcnn import MTCNN
 
-from exceptions import InvalidImage
-from face_detector import FaceDetector
-from logger import LoggerFactory
-from validators import is_valid_img
+from .exceptions import InvalidImage
+from .face_detector import FaceDetector
+from .logger import LoggerFactory
+from .validators import is_valid_img
 
 # Load the custom logger
 logger = None

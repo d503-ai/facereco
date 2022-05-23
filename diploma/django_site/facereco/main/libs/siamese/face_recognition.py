@@ -23,20 +23,20 @@ from typing import Dict, List, Tuple
 import dlib
 import numpy as np
 
-from exceptions import (
+from .exceptions import (
     FaceMissing,
     InvalidImage,
     ModelFileMissing,
     NoFaceDetected,
     NoNameProvided,
 )
-from face_data_store import FaceDataStore
-from face_detection_dlib import FaceDetectorDlib
-from face_detection_mtcnn import FaceDetectorMTCNN
-from face_detection_opencv import FaceDetectorOpenCV
-from logger import LoggerFactory
-from media_utils import convert_to_dlib_rectangle
-from validators import is_valid_img, path_exists
+from .face_data_store import FaceDataStore
+from .face_detection_dlib import FaceDetectorDlib
+from .face_detection_mtcnn import FaceDetectorMTCNN
+from .face_detection_opencv import FaceDetectorOpenCV
+from .logger import LoggerFactory
+from .media_utils import convert_to_dlib_rectangle
+from .validators import is_valid_img, path_exists
 
 # Load the custom logger
 logger = None
@@ -61,7 +61,7 @@ class FaceRecognition:
         FaceMissing: [description]
     """
 
-    keypoints_model_path = "shape_predictor_5_face_landmarks.dat"
+    keypoints_model_path = "shape_predictor_68_face_landmarks.dat"
     face_recog_model_path = "dlib_face_recognition_resnet_model_v1.dat"
 
     def __init__(
@@ -103,6 +103,7 @@ class FaceRecognition:
             self.face_detector = FaceDetectorMTCNN(crop_forehead=True, shrink_ratio=0.2)
         else:
             self.face_detector = FaceDetectorDlib()
+
         self.face_detection_threshold = face_detection_threshold
 
         self.keypoints_detector = dlib.shape_predictor(keypoints_model_path)

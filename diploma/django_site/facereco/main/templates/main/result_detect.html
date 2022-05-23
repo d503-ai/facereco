@@ -8,16 +8,14 @@
                 <h2>{{ dat.title }}</h2>
                 {% if dat.faces %}
                 <div class="center">
-                    <p class="display-5">Faces on image: {{ dat.faces }}</p>
-                </div>
-                <div class="center">
-                    <p class="display-5">Execute time: {{ dat.time }} seconds</p>
+                    <p>Кількість обличь: {{ dat.faces }}</p>
+                    <p>Час виконання: {{ dat.time }} секунд</p>
                 </div>
                 <div>
                     <img src="{{ dat.detect_image.url }}" width="450" class="img-responsive"/>
                 </div>
                 {% else %}
-                    <h3>No faces were detected</h3>
+                    <h3>Жодного знайденного обличчя</h3>
                 {% endif %}
             </div>
         </div>
@@ -27,21 +25,23 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Speed</th>
+      <th scope="col">Швидкість</th>
+      <th scope="col">К-ть обличь</th>
     </tr>
   </thead>
   <tbody>
     {% for dat in data %}
     <tr>
-      <th scope="row">{{dat.title}}</th>
-      <td>{{dat.time}}</td>
+        <th scope="row">{{dat.title}}</th>
+        <td>{{dat.time}}</td>
+        <td>{{dat.faces}}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <br>
 <div class="text-center my-md-3 pl-md-3">
-    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to Home</a>
+    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Повернутися додому</a>
 </div>
 
 {% endblock content %}

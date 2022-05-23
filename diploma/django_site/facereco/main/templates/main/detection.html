@@ -2,13 +2,21 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-
+<div>
+    Для знаходження обличь оберіть зображення.
+    <br>
+    Обмеження щодо завдання:
+    <ul>
+        <li>1. На зображені повино бути хоча б 1 обличчя.</li>
+        <li>2. Якщо на зображені нема обличь, то буде виконано виключення.</li>
+    </ul>
+</div>
 <form  method="POST" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
     {% bootstrap_form form exclude='second_image' %}
 
-    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Proceed" %}
+    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Виконати" %}
 </form>
 
 

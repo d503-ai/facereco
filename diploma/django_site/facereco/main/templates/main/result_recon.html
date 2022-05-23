@@ -15,20 +15,18 @@
         </div>
         <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
             <div>
-                <img src="{{ dat.recognition_image_2.url }}" width="250" class="img-responsive"/>
+                <img src="{{ dat.recognition_image_2.url }}" height="250" class="img-responsive"/>
             </div>
         </div>
     </div>
     <div class="text-center">
-        <p class="display-5">Execution time: {{ dat.time }} seconds</p>
-    </div>
-    <div class="text-center">
-        <p class="display-5">Accuracy (euclidean value): {{ dat.accuracy }}</p>
+        <p>Час виконання: {{ dat.time }} seconds</p>
+        <p>Точність (евклидова відстань): {{ dat.accuracy }}</p>
     </div>
     {% else %}
     <div class="d-flex justify-content-center">
         <div class="px-md-5 text-center">
-            <h3>No face were detected or too many faces</h3>
+            <h3>Жодного обличчя або занадто багато обличь</h3>
         </div>
     </div>
     {% endif %}
@@ -38,9 +36,9 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Speed</th>
-      <th scope="col">Accuracy</th>
-      <th scope="col">Result</th>
+      <th scope="col">Шкидкість</th>
+      <th scope="col">Точність</th>
+      <th scope="col">Результат</th>
     </tr>
   </thead>
   <tbody>
@@ -49,10 +47,10 @@
       <th scope="row">{{dat.title}}</th>
       <td>{{dat.time}}</td>
       <th>{{dat.accuracy}}</th>
-        {% if dat.accuracy < 0.6%}
-            <td>The same persons</td>
+        {% if dat.accuracy <= 0.55%}
+            <td>Однакова людина</td>
         {% else %}
-            <td>Different</td>
+            <td>Різні люди</td>
         {% endif %}
     </tr>
     {% endfor %}
@@ -60,7 +58,7 @@
 </table>
 <br>
 <div class="text-center my-md-3 pl-md-3">
-    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to Home</a>
+    <a class="btn btn-outline-secondary" href="{% url 'home' %}">Повернутися додому</a>
 </div>
 
 {% endblock content %}

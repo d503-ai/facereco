@@ -10,6 +10,9 @@ from .libs.libopencv import *
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Allow upload only
+# Allowed extensions are: png, apng, bmp, tif, tiff, jfif, jpe, jpg, jpeg
+
 def index(request):
     """
     Home page

@@ -1,40 +1,50 @@
+import dlib
+from skimage import io
 from pathlib import Path
 import time
-from .siamese.face_detection_dlib import FaceDetectorDlib
-from .siamese.media_utils import load_image_path
-from .siamese.face_recognition import FaceRecognition
+import cv2
+from imutils import face_utils
+from facereco.main.libs.siamese.face_recognition import FaceRecognition
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent
+predictor = dlib.shape_predictor(str(BASE_DIR) + '\models\shape_predictor_5_face_landmarks.dat')
 
 
-def siameseFace(img, path):
+def siameseFace(img, name, path):
     start_time = time.time()
-    face_detector = FaceDetectorDlib(model_type="hog")
     face_recognizer = FaceRecognition(
         model_loc="models",
         persistent_data_loc="data/facial_data.json",
         face_detector="dlib",
     )
-    image = load_image_path(img)
-
-
-def registerFace(img, fr, fd):
-    
-    # Matches is a list containing information about the matches
-    # for each of the faces in the image
-    matches = face_recognizer.register_face(image=img, name=name)
-    result = face_recognizer.recognize_faces(image=img, threshold=0.6)
-    bboxes = face_detector.detect_faces(image)
-
-
-# adds a new user face to the database using his/her image stored on disk using the image path
-def add_user_img_path(user_db, FRmodel, name, img_path):
-    if name not in user_db:
-        user_db[name] = img_to_encoding(img_path, FRmodel)
-        print("Encodings:",user_db[name])
-        # save the database
-        with open('database/user_dict.pickle', 'wb') as handle:
-                pickle.dump(user_db, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        print('User ' + name + ' added successfully')
+    image = io.imread(img)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    face_recognizer.register_face(image=image, name=name)
+    result = face_recognizer.recognize_faces(image)
+    dets = result[0][0]
+    face_desc = result[0][1]['encoding']
+    if dets:
+        for i, det in enumerate(dets):
+            # determine the facial landmarks for the face region, then
+            # convert the facial landmark (x, y)-coordinates to a NumPy
+            # array
+            shape = predictor(gray, det)
+            shape2 = face_utils.shape_to_np(shape)
+            # convert dlib's rectangle to a OpenCV-style bounding box
+            # [i.e., (x, y, w, h)], then draw the face bounding box
+            (x, y, w, h) = face_utils.rect_to_bb(det)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # show the face number
+            cv2.putText(img, "Face #{}".format(i + 1), (x + 30, y - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # loop over the (x, y)-coordinates for the facial landmarks
+            # and draw them on the image
+            for (x, y) in shape2:
+                cv2.circle(img, (x, y), 1, (0, 0, 255), 2)
     else:
-        print('The name is already registered! Try a different name.........')
+        return {'path': path, 'facedesc': None, 'faces': len(dets),
+                'time': float("{:.4f}".format(time.time() - start_time))}
+    # show the output image with the face detections + facial landmarks
+    cv2.imwrite(img, str(BASE_DIR).parent.parent + "/static/images/" + path)
+    return {'path': path, 'facedesc': face_desc, 'faces': len(dets),
+            'time': float("{:.4f}".format(time.time() - start_time))}

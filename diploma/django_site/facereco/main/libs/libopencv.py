@@ -10,7 +10,9 @@ def openCVFace(img, path):
     start_time = time.time()
     image = face_recognition.load_image_file(img)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # Знаходження обличь на зображені
     faces = face_recognition.face_locations(image)
+    # Визначення дескриптору обличчя
     encodings = face_recognition.face_encodings(image)
 
     if faces:
