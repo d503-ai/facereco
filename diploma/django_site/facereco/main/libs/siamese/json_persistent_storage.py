@@ -14,20 +14,8 @@ import sys
 from typing import Dict, List
 
 from .exceptions import DatabaseFileNotFound
-from .logger import LoggerFactory
 from .persistent_storage import PersistentStorage
 from .validators import path_exists
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class JSONStorage(PersistentStorage):
@@ -57,7 +45,6 @@ class JSONStorage(PersistentStorage):
         base_path, filename = os.path.split(self.db_loc)
 
         if not path_exists(base_path):
-            logger.info("DB path doesn't exist! Attempting path creation...")
             os.makedirs(base_path)
         if os.path.exists(self.db_loc):
             # load the existing data
@@ -66,7 +53,6 @@ class JSONStorage(PersistentStorage):
             # Add the new data and save to disk
             data.append(face_data)
             self.save_data(data=data)
-            logger.info("Data saved to DB...")
         except Exception as exc:
             raise exc
 
@@ -112,11 +98,6 @@ class JSONStorage(PersistentStorage):
 
         if num_entries != len(all_data):
             self.save_data(data=all_data)
-            logger.info(
-                ("{} face(s) deleted and updated" " data saved to DB...").format(
-                    num_entries - len(all_data)
-                )
-            )
             return True
         return False
 
@@ -147,29 +128,3 @@ class JSONStorage(PersistentStorage):
         for face_data in data:
             face_data["encoding"] = tuple(face_data["encoding"])
         return data
-
-
-if __name__ == "__main__":
-    """ Sanity checks """
-
-    # ob = JSONStorage(db_loc="data/test_facial_data.json")
-    # # Save data
-    # face_data1 = {"name": "test1", "encoding": (-3.4, 0.3, -0.823, 1)}
-    # face_data2 = {"name": "test2", "encoding": (-3.4, 0.3, -0.823, 1)}
-    # face_data3 = {"name": "test3", "encoding": (-3.4, 0.3, -0.823, 1)}
-
-    # ob.add_data(face_data=face_data1)
-    # print(ob.get_all_data())
-
-    # ob.add_data(face_data=face_data2)
-    # print(ob.get_all_data())
-
-    # # remove data
-    # ob.delete_data(face_id="test1")
-    # print("Test1 data deleted")
-    # print(ob.get_all_data())
-
-    # # remove the test file
-    # os.remove("data/test_facial_data.json")
-    # print("File: {} deleted!".format("data/test_facial_data.json"))
-    pass

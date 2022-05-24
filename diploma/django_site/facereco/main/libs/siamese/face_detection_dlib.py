@@ -20,20 +20,8 @@ import dlib
 
 from .exceptions import InvalidImage, ModelFileMissing
 from .face_detector import FaceDetector
-from .logger import LoggerFactory
 from .media_utils import convert_to_rgb, draw_bounding_box
 from .validators import is_valid_img
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class FaceDetectorDlib(FaceDetector):
@@ -70,7 +58,6 @@ class FaceDetectorDlib(FaceDetector):
                     raise ModelFileMissing
                 self.face_detector = dlib.cnn_face_detection_model_v1(cnn_model_path)
             self.model_type = model_type
-            logger.info("dlib: {} face detector loaded...".format(self.model_type))
         except Exception as e:
             raise e
 

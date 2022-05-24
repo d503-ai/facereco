@@ -10,26 +10,13 @@ Usage: python -m face_recog.face_detection_opencv
 # ===================================================
 
 import os
-import sys
 from typing import List
 
 import cv2
 
 from .exceptions import InvalidImage, ModelFileMissing
 from .face_detector import FaceDetector
-from .logger import LoggerFactory
 from .validators import is_valid_img
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class FaceDetectorOpenCV(FaceDetector):

@@ -13,23 +13,10 @@ Usage: python -m face_recog.simple_cache
 """
 # ===================================================
 
-import sys
 from typing import Dict, List, Tuple
 
 from .exceptions import InvalidCacheInitializationData, NotADictionary
 from .in_memory_cache import InMemoryCache
-from .logger import LoggerFactory
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class SimpleCache(InMemoryCache):

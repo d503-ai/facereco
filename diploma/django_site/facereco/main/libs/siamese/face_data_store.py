@@ -22,23 +22,9 @@ Usage: python -m face_recog.face_data_store
 """
 # ===================================================
 
-import sys
-
 from .exceptions import DatabaseFileNotFound, InvalidCacheInitializationData
 from .json_persistent_storage import JSONStorage
-from .logger import LoggerFactory
 from .simple_cache import SimpleCache
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class FaceDataStore:
@@ -66,11 +52,8 @@ class FaceDataStore:
         try:
             # Initialize the cache handler with data from DB
             saved_data = self.db_handler.get_all_data()
-            logger.info(
-                "Data loaded from DB with {} entries...".format(len(saved_data))
-            )
         except DatabaseFileNotFound:
-            logger.info("No existing DB file found!!")
+            pass
         try:
             self.cache_handler = SimpleCache(saved_data)
         except InvalidCacheInitializationData:
@@ -105,39 +88,3 @@ class FaceDataStore:
         # Cache data is returned since it is always up to date
         # with CRUD operations.
         return self.cache_handler.get_all_data()
-
-
-if __name__ == "__main__":
-
-    # print("Saving 1 entry to DataStore...")
-    # ob = FaceDataStore(persistent_data_loc="data/test_facial_data.json")
-    # # Save data
-    # face_data = {"name": "test2", "encoding": (-3.4, 0.3, -0.823, 1)}
-    # ob.add_facial_data(face_data)
-    # print(ob.get_all_facial_data())
-
-    # print("Saving 2 entry to DataStore with existing DB(1 entry)...")
-    # # Now we again create a DB and again add the same data
-    # # cache will return only 2 entry but DB will have both
-    # ob1 = FaceDataStore(persistent_data_loc="data/test_facial_data.json")
-    # # Save data
-    # face_data1 = {"name": "test1", "encoding": (-3.4, 0.3, -0.823, 1)}
-    # face_data2 = {"name": "test2", "encoding": (-3.4, 0.3, -0.823, 1)}
-    # ob1.add_facial_data(face_data1)
-    # ob1.add_facial_data(face_data2)
-
-    # print("DB data", ob1.db_handler.get_all_data())
-    # print("Cache data", ob1.cache_handler.get_all_data())
-    # print("API data", ob1.get_all_facial_data())
-
-    # # remove entry
-    # print("\n\nAfter Deletion ******")
-    # ob1.remove_facial_data(face_id="test2")
-    # print("DB data", ob1.db_handler.get_all_data())
-    # print("Cache data", ob1.cache_handler.get_all_data())
-    # print("API data", ob1.get_all_facial_data())
-
-    # # remove the test file
-    # os.remove("data/test_facial_data.json")
-    # print("File: {} deleted!".format("data/test_facial_data.json"))
-    pass

@@ -13,26 +13,13 @@ Ref: https://github.com/ipazc/mtcnn
 """
 # ===================================================
 
-import sys
 from typing import List
 
 from mtcnn import MTCNN
 
 from .exceptions import InvalidImage
 from .face_detector import FaceDetector
-from .logger import LoggerFactory
 from .validators import is_valid_img
-
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
 
 
 class FaceDetectorMTCNN(FaceDetector):
@@ -58,7 +45,6 @@ class FaceDetectorMTCNN(FaceDetector):
             self.face_detector = MTCNN()
             self.crop_forehead = crop_forehead
             self.shrink_ratio = shrink_ratio
-            logger.info("MTCNN face detector loaded...")
         except Exception as e:
             raise e
 

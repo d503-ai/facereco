@@ -18,6 +18,7 @@ https://github.com/davisking/dlib-models
 import os
 import sys
 import uuid
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import dlib
@@ -34,20 +35,10 @@ from .face_data_store import FaceDataStore
 from .face_detection_dlib import FaceDetectorDlib
 from .face_detection_mtcnn import FaceDetectorMTCNN
 from .face_detection_opencv import FaceDetectorOpenCV
-from .logger import LoggerFactory
 from .media_utils import convert_to_dlib_rectangle
 from .validators import is_valid_img, path_exists
 
-# Load the custom logger
-logger = None
-try:
-    logger_ob = LoggerFactory(logger_name=__name__)
-    logger = logger_ob.get_logger()
-    logger.info("{} loaded...".format(__name__))
-    # set exception hook for uncaught exceptions
-    sys.excepthook = logger_ob.uncaught_exception_hook
-except Exception as exc:
-    raise exc
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class FaceRecognition:
@@ -61,15 +52,14 @@ class FaceRecognition:
         FaceMissing: [description]
     """
 
-    keypoints_model_path = "shape_predictor_68_face_landmarks.dat"
+    keypoints_model_path = "shape_predictor_5_face_landmarks.dat"
     face_recog_model_path = "dlib_face_recognition_resnet_model_v1.dat"
-
     def __init__(
-        self,
-        model_loc: str = "./models",
-        persistent_data_loc="data/facial_data.json",
-        face_detection_threshold: int = 0.99,
-        face_detector: str = "dlib",
+            self,
+            model_loc: str = "./models",
+            persistent_data_loc="data/facial_data.json",
+            face_detection_threshold: int = 0.99,
+            face_detector: str = "dlib",
     ) -> None:
         """Constructor
 
@@ -92,7 +82,7 @@ class FaceRecognition:
             model_loc, FaceRecognition.face_recog_model_path
         )
         if not (
-            path_exists(keypoints_model_path) or path_exists(face_recog_model_path)
+                path_exists(keypoints_model_path) or path_exists(face_recog_model_path)
         ):
             raise ModelFileMissing
         if face_detector == "opencv":
@@ -152,7 +142,6 @@ class FaceRecognition:
             }
             # save the encoding with the name
             self.save_facial_data(facial_data)
-            logger.info("Face registered with name: {}".format(name))
         except Exception as exc:
             raise exc
         return facial_data
@@ -180,7 +169,7 @@ class FaceRecognition:
         return self.datastore.get_all_facial_data()
 
     def recognize_faces(
-        self, image, threshold: float = 0.6, bboxes: List[List[int]] = None
+            self, image, threshold: float = 0.6, bboxes: List[List[int]] = None
     ):
         """Finds matching registered users for the
         face(s) in the input image. The input image should be cropped to contain
@@ -282,37 +271,3 @@ class FaceRecognition:
             [type]: [description]
         """
         return np.linalg.norm(np.array(vector1) - np.array(vector2))
-
-
-if __name__ == "__main__":
-    ############ Sample Usage and Testing ################
-    # from face_recog.media_utils import load_image_path
-
-    # ob = FaceRecognition(
-    #     model_loc="models",
-    #     persistent_data_loc="data/facial_data.json",
-    #     face_detector="dlib",
-    # )
-    # img1 = load_image_path("data/sample/1.jpg")
-    # img2 = load_image_path("data/sample/2.jpg")
-    # img3 = load_image_path("data/sample/sagar.jpg")
-    # img4 = load_image_path("data/sample/vidit.jpg")
-    # img5 = load_image_path("data/sample/sagar2.jpg")
-    
-    # data1 = ob.register_face(image=img1, name='Keanu')
-    # data2 = ob.register_face(image=img2, name='Test2')
-
-    # # print(data1)
-    # print(data2)
-
-    # fd = FaceDetectorMTCNN()
-    # fd2 = FaceDetectorOpenCV()
-    # print('FD',fd.detect_faces(img3))
-    # print('FD2',fd2.detect_faces(img3))
-
-    # print('Attempting face recognition...')
-    # matches = ob.recognize_faces(img5)
-    # print(match['name'] if match and 'name' in match else '', dist)
-
-    # os.remove("data/facial_data.json")
-    pass

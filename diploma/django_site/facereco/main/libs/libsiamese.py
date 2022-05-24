@@ -4,47 +4,80 @@ from pathlib import Path
 import time
 import cv2
 from imutils import face_utils
-from facereco.main.libs.siamese.face_recognition import FaceRecognition
+from .siamese.face_recognition import FaceRecognition
+from .siamese.face_detection_dlib import FaceDetectorDlib
 
 BASE_DIR = Path(__file__).resolve().parent
 predictor = dlib.shape_predictor(str(BASE_DIR) + '\models\shape_predictor_5_face_landmarks.dat')
 
 
-def siameseFace(img, name, path):
+def siameseFaceRecog(img, name, path):
     start_time = time.time()
+    # Клас для розпізнання обличчя
     face_recognizer = FaceRecognition(
-        model_loc="models",
+        model_loc=str(BASE_DIR) + "/models",
         persistent_data_loc="data/facial_data.json",
         face_detector="dlib",
     )
+    # Зчитання зображення
     image = io.imread(img)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    face_recognizer.register_face(image=image, name=name)
-    result = face_recognizer.recognize_faces(image)
-    dets = result[0][0]
-    face_desc = result[0][1]['encoding']
-    if dets:
+    # Створення об'єкту для знаходження обличь
+    face_detector = FaceDetectorDlib(model_type="hog")
+    # Знаходження обличь
+    bboxes = face_detector.detect_faces(image)
+    # Перевірка, чи були знайдені обличчя
+    if bboxes:
+        # Зареєструвати обличчя у локальній БД
+        face_recognizer.register_face(image=image, name=name)
+        # Розпізнати обличчя за зареєстрованний шаблоном
+        result = face_recognizer.recognize_faces(image)
+        dets = [result[0][0]]
+        face_desc = result[0][1]['encoding']
         for i, det in enumerate(dets):
-            # determine the facial landmarks for the face region, then
-            # convert the facial landmark (x, y)-coordinates to a NumPy
-            # array
-            shape = predictor(gray, det)
+            # Перетворення координат знайденного обличчя до
+            # об'єкту Rectangle для подальшої обробки
+            rectangle = dlib.rectangle(det[0], det[1], det[2], det[3])
+            # Знайти ознаки обличчя
+            shape = predictor(image, rectangle)
             shape2 = face_utils.shape_to_np(shape)
-            # convert dlib's rectangle to a OpenCV-style bounding box
-            # [i.e., (x, y, w, h)], then draw the face bounding box
-            (x, y, w, h) = face_utils.rect_to_bb(det)
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            # show the face number
-            cv2.putText(img, "Face #{}".format(i + 1), (x + 30, y - 10),
+            # Привести об'єкт Dlib до вигляду OpenCV-style bounding box
+            (x, y, w, h) = face_utils.rect_to_bb(rectangle)
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # Додання напису номера обличчя
+            cv2.putText(image, "Face #{}".format(i + 1), (x + 30, y - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            # loop over the (x, y)-coordinates for the facial landmarks
-            # and draw them on the image
+            # Цикл для проходження по координатам ознак для того,
+            # щоб намалювати їх
             for (x, y) in shape2:
-                cv2.circle(img, (x, y), 1, (0, 0, 255), 2)
+                cv2.circle(image, (x, y), 1, (0, 0, 255), 2)
     else:
-        return {'path': path, 'facedesc': None, 'faces': len(dets),
+        return {'path': path, 'facedesc': None, 'faces': len(bboxes),
                 'time': float("{:.4f}".format(time.time() - start_time))}
-    # show the output image with the face detections + facial landmarks
-    cv2.imwrite(img, str(BASE_DIR).parent.parent + "/static/images/" + path)
-    return {'path': path, 'facedesc': face_desc, 'faces': len(dets),
+    # Збереження зображення із намальованними ознаками та дескриптором
+    dlib.save_image(image, str(BASE_DIR.parent.parent) + "/static/images/" + path)
+    return {'path': path, 'facedesc': face_desc, 'faces': len(bboxes),
+            'time': float("{:.4f}".format(time.time() - start_time))}
+
+
+def siameseFaceDetect(img, path):
+    start_time = time.time()
+    image = io.imread(img)
+    face_detector = FaceDetectorDlib(model_type="hog")
+    bboxes = face_detector.detect_faces(image)
+    if bboxes:
+        for i, bbox in enumerate(bboxes):
+            rectangle = dlib.rectangle(bbox[0], bbox[1], bbox[2], bbox[3])
+            shape = predictor(image, rectangle)
+            shape2 = face_utils.shape_to_np(shape)
+            (x, y, w, h) = face_utils.rect_to_bb(rectangle)
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(image, "Face #{}".format(i + 1), (x + 30, y - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            for (x, y) in shape2:
+                cv2.circle(image, (x, y), 1, (0, 0, 255), 2)
+    else:
+        return {'path': path, 'faces': len(bboxes),
+                'time': float("{:.4f}".format(time.time() - start_time))}
+    dlib.save_image(image, str(BASE_DIR.parent.parent) + "/static/images/" + path)
+    return {'path': path, 'faces': len(bboxes),
             'time': float("{:.4f}".format(time.time() - start_time))}
