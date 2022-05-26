@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 django.setup()
 
 from django.test import TestCase
-from django.urls import reverse, resolve, NoReverseMatch
+from django.urls import resolve, NoReverseMatch
 from ..views import *
 
 
@@ -49,14 +49,16 @@ class TestUrls(TestCase):
         """
         Перевірка на неіснуючий URL
         """
-        try:
-            reverse('non-existing-page')
-        except NoReverseMatch:
-            pass
+        reverse('non-existing-page')
+
+        self.assertRaises(NoReverseMatch)
 
     def test_redirect_to_non_existing_page(self):
+        """
+        Перехід з існуючої сторінки до неіснуючої
+        """
         reverse('home')
-        try:
-            redirect('non-existing-page')
-        except NoReverseMatch:
-            pass
+
+        redirect('non-existing-page')
+
+        self.assertRaises(NoReverseMatch)

@@ -16,7 +16,7 @@ def siameseFaceRecog(img, name, path):
     # Клас для розпізнання обличчя
     face_recognizer = FaceRecognition(
         model_loc=str(BASE_DIR) + "/models",
-        persistent_data_loc="data/facial_data.json",
+        persistent_data_loc=str(BASE_DIR) + "/data/facial_data.json",
         face_detector="dlib",
     )
     # Зчитання зображення

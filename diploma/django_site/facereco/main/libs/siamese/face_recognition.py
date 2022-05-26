@@ -16,7 +16,6 @@ https://github.com/davisking/dlib-models
 # ===================================================
 
 import os
-import sys
 import uuid
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -38,8 +37,6 @@ from .face_detection_opencv import FaceDetectorOpenCV
 from .media_utils import convert_to_dlib_rectangle
 from .validators import is_valid_img, path_exists
 
-BASE_DIR = Path(__file__).resolve().parent
-
 
 class FaceRecognition:
     """Class for Face Recognition related methods.
@@ -54,10 +51,11 @@ class FaceRecognition:
 
     keypoints_model_path = "shape_predictor_5_face_landmarks.dat"
     face_recog_model_path = "dlib_face_recognition_resnet_model_v1.dat"
+
     def __init__(
             self,
             model_loc: str = "./models",
-            persistent_data_loc="data/facial_data.json",
+            persistent_data_loc = "./data/facial_data.json",
             face_detection_threshold: int = 0.99,
             face_detector: str = "dlib",
     ) -> None:
@@ -82,7 +80,7 @@ class FaceRecognition:
             model_loc, FaceRecognition.face_recog_model_path
         )
         if not (
-                path_exists(keypoints_model_path) or path_exists(face_recog_model_path)
+            path_exists(keypoints_model_path) or path_exists(face_recog_model_path)
         ):
             raise ModelFileMissing
         if face_detector == "opencv":
@@ -169,7 +167,7 @@ class FaceRecognition:
         return self.datastore.get_all_facial_data()
 
     def recognize_faces(
-            self, image, threshold: float = 0.6, bboxes: List[List[int]] = None
+        self, image, threshold: float = 0.6, bboxes: List[List[int]] = None
     ):
         """Finds matching registered users for the
         face(s) in the input image. The input image should be cropped to contain
