@@ -18,5 +18,5 @@ class Neural(models.Model):
     recognition_image_2 = models.ImageField(null=True)
     detect_image = models.ImageField()
     faces = models.IntegerField()
-    accuracy = models.FloatField(null=True)
+    euclidian_distance = models.FloatField(null=True)
     time = models.FloatField()

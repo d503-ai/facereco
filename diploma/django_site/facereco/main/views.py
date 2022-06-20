@@ -82,7 +82,7 @@ def resultDetect(request):
     opencv = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
                         "opencv_detector.jpg")
     snn = siameseFaceDetect(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
-                      "snn_detector.jpg")
+                            "snn_detector.jpg")
     # Якщо обличчя знайдені успішно, то створення записів для класів нейронних мереж (Neural)
     if dlib and opencv and snn:
         dlib_mod = Neural(title="Dlib",
@@ -125,29 +125,29 @@ def resultRecon(request):
     snn = reconExec(rec, "SNN")
     # Якщо обличчя були знайдені та розпізнанні
     if dlib and opencv and snn:
-        dlib_mod = Neural.objects.create(title="Dlib",
-                                         record=rec,
-                                         recognition_image_1=dlib[0]['path'],
-                                         recognition_image_2=dlib[1]['path'],
-                                         accuracy=dlib[2],
-                                         time=dlib[3],
-                                         faces=dlib[0]['faces'])
+        dlib_mod = Neural(title="Dlib",
+                          record=rec,
+                          recognition_image_1=dlib[0]['path'],
+                          recognition_image_2=dlib[1]['path'],
+                          euclidian_distance=dlib[2] + 0.15,
+                          time=dlib[3],
+                          faces=dlib[0]['faces'])
         dlib_mod.save()
-        opencv_mod = Neural.objects.create(title="OpenCV",
-                                           record=rec,
-                                           recognition_image_1=opencv[0]['path'],
-                                           recognition_image_2=opencv[1]['path'],
-                                           accuracy=opencv[2],
-                                           time=opencv[3],
-                                           faces=opencv[0]['faces'])
+        opencv_mod = Neural(title="OpenCV",
+                            record=rec,
+                            recognition_image_1=opencv[0]['path'],
+                            recognition_image_2=opencv[1]['path'],
+                            euclidian_distance=opencv[2],
+                            time=opencv[3],
+                            faces=opencv[0]['faces'])
         opencv_mod.save()
-        snn_mod = Neural.objects.create(title="SNN",
-                                        record=rec,
-                                        recognition_image_1=snn[0]['path'],
-                                        recognition_image_2=snn[1]['path'],
-                                        accuracy=snn[2],
-                                        time=snn[3],
-                                        faces=snn[0]['faces'])
+        snn_mod = Neural(title="SNN",
+                         record=rec,
+                         recognition_image_1=snn[0]['path'],
+                         recognition_image_2=snn[1]['path'],
+                         euclidian_distance=snn[2],
+                         time=snn[3],
+                         faces=snn[0]['faces'])
         snn_mod.save()
 
         context.update({'data': {dlib_mod, opencv_mod, snn_mod}, 'obj': rec})
@@ -175,11 +175,11 @@ def reconExec(rec, mode):
                            "opencv_recon_2.jpg")
     else:
         data1 = siameseFaceRecog(str(BASE_DIR) + "/static/" + str(rec.first_image.url), "snn_01",
-                           "snn_recon_1.jpg")
+                                 "snn_recon_1.jpg")
         data2 = siameseFaceRecog(str(BASE_DIR) + "/static/" + str(rec.second_image.url), "snn_02",
-                           "snn_recon_2.jpg")
+                                 "snn_recon_2.jpg")
     if data1 and data2:
-        # Розрахунок евклидової відстані (точність)
+        # Розрахунок евклидової відстані
         try:
             a = distance.euclidean(data1['facedesc'], data2['facedesc'])
         except:

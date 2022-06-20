@@ -20,5 +20,5 @@ class NeuralForm(forms.ModelForm):
             'recognition_image_2',
             'detect_image',
             'time',
-            'accuracy',
+            'euclidian_distance',
         ]

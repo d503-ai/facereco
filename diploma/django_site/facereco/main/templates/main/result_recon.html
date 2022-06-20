@@ -6,7 +6,7 @@
     <div class="text-center">
         <h1>{{ dat.title }}</h1>
     </div>
-    {% if dat.faces and dat.faces < 2%}
+    {% if dat.faces and dat.faces < 2 %}
     <div class="d-flex justify-content-center">
         <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
             <div>
@@ -21,7 +21,7 @@
     </div>
     <div class="text-center">
         <p>Час виконання: {{ dat.time }} seconds</p>
-        <p>Точність (евклидова відстань): {{ dat.accuracy }}</p>
+        <p>Евклидова відстань: {{ dat.euclidian_distance }}</p>
     </div>
     {% else %}
     <div class="d-flex justify-content-center">
@@ -37,7 +37,7 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Шкидкість</th>
-      <th scope="col">Точність</th>
+      <th scope="col">Евклідова відстань</th>
       <th scope="col">Результат</th>
     </tr>
   </thead>
@@ -46,8 +46,8 @@
     <tr>
       <th scope="row">{{dat.title}}</th>
       <td>{{dat.time}}</td>
-      <th>{{dat.accuracy}}</th>
-        {% if dat.accuracy <= 0.6 %}
+      <th>{{dat.euclidian_distance}}</th>
+        {% if dat.euclidian_distance <= 0.6 %}
             <td>Однакова людина</td>
         {% else %}
             <td>Різні люди</td>
