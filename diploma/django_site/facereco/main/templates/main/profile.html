@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Profile: {{ user.username }}</h2>
+
+    <h3>Performed Face Recognitions:</h3>
+    <ul>
+      {% for recognition in recognitions %}
+        <li>
+          <a href="{% url 'record-details' recognition.id %}">{{ recognition.title }}</a>
+          <!-- Add other fields you want to display -->
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

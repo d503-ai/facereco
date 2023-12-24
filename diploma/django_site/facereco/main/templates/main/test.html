@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            <h2>Cropped Faces from First Image</h2>
+                {% for face_path in cropped_faces_first_image %}
+                    {% with "images/"|add:face_path as full_path %}
+                        <img src="{% static full_path %}" alt="{{ face_path }}"/>
+                    {% endwith %}
+                {% endfor %}
+            <br>
+            <select name="selected_first_image">
+                {% for face_path in cropped_faces_first_image %}
+                    {% with forloop.counter as i %}
+                        <option value="{{ face_path }}">Face {{ i }}</option>
+                    {% endwith %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <h2>Cropped Faces from Second Image</h2>
+                {% for face_path in cropped_faces_second_image %}
+                    {% with "images/"|add:face_path as full_path %}
+                        <img src="{% static full_path %}" alt="{{ face_path }}"/>
+                    {% endwith %}
+                {% endfor %}
+            <br>
+            <select name="selected_second_image">
+                {% for face_path in cropped_faces_second_image %}
+                    {% with forloop.counter as i %}
+                        <option value="{{ face_path }}">Face {{ i }}</option>
+                    {% endwith %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

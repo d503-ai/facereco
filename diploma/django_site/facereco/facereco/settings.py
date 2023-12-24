@@ -16,7 +16,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
-
+AUTH_USER_MODEL = 'auth.User'
 # Application definition
 
 INSTALLED_APPS = [
@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'django_bootstrap5',
+    'bootstrap5',
     'main.apps.MainConfig',
     'django_cleanup.apps.CleanupConfig',
 ]
