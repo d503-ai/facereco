@@ -89,22 +89,20 @@ def record_details(request, record_id):
 
 @login_required
 def recognize(request):
-    """
-    Recognition page
-    """
     context = {'title': 'Recognition'}
 
     if request.method == 'POST':
         form = RecordForm(request.POST, request.FILES)
 
         if form.is_valid():
-            # Save the form, but set the user before saving
             record = form.save(commit=False)
-            record.user = request.user  # Set the user to the currently logged-in user
+            record.user = request.user
             record.save()
 
-            # Redirect to the result page
-            return redirect('test', record_id=record.id)
+            # Apply noise based on the selected noise type
+            record.apply_noise()
+
+            return redirect('select-faces', record_id=record.id)
     else:
         form = RecordForm()
 
@@ -209,9 +207,9 @@ def reconExec(rec, mode):
         data2 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
                            "opencv_recon_2.jpg")
     elif mode == "VGGImp":
-        data1 = vggImpFaceRecog(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
+        data1 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
                            "vggimp_recon_1.jpg")
-        data2 = vggImpFaceRecog(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
+        data2 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
                            "vggimp_recon_2.jpg")
     else:
         data1 = siameseFaceRecog(str(BASE_DIR) + "/static/" + str(rec.first_image.url), "snn_01",
@@ -221,7 +219,7 @@ def reconExec(rec, mode):
     if data1 and data2:
         # Розрахунок евклидової відстані
         try:
-            if mode == "OpenCV":
+            if mode == "OpenCV" or mode == "VGGImp":
                 a = distance.euclidean(data1['facedesc'][0].flatten(), data2['facedesc'][0].flatten())
             else:
                 a = distance.euclidean(data1['facedesc'], data2['facedesc'])
@@ -231,13 +229,17 @@ def reconExec(rec, mode):
     return data1, data2, a, float("{:.4f}".format(time.time() - start_time))
 
 
-def test(request, record_id):
+def select_faces(request, record_id):
     # Get the Record object based on the record_id
     record = get_object_or_404(Record, id=record_id)
 
     if request.method == 'POST':
         selected_first_image = request.POST.get('selected_first_image')
         selected_second_image = request.POST.get('selected_second_image')
+
+        # Delete the previous images
+        delete_previous_images(record.first_image.url)
+        delete_previous_images(record.second_image.url)
 
         # Update the Record object with selected images
         record.first_image = selected_first_image
@@ -270,4 +272,23 @@ def test(request, record_id):
         'cropped_faces_second_image': cropped_faces_second_image,
     }
 
-    return render(request, 'main/test.html', context)
+    return render(request, 'main/select_faces.html', context)
+
+
+def delete_record(request, record_id):
+    record = get_object_or_404(Record, id=record_id)
+
+    # Delete the record
+    record.delete()
+
+    return redirect('profile')  # Redirect to the profile page after deletion
+
+
+def delete_previous_images(image_path):
+    # Ensure the image path is not empty to avoid errors
+    if image_path:
+        # Use os.remove to delete the file
+        try:
+            os.remove(image_path)
+        except FileNotFoundError:
+            pass  # Handle the case where the file does not exist

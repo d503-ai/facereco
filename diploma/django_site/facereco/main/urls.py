@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('record_details/<int:record_id>/', views.record_details, name='record-details'),
-    path('test/<int:record_id>/', views.test, name='test'),
+    path('select_faces/<int:record_id>/', views.select_faces, name='select-faces'),
+    path('delete_record/<int:record_id>/', views.delete_record, name='delete-record'),
 ]
 
