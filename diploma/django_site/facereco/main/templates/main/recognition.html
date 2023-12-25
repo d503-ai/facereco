@@ -9,6 +9,8 @@
 <form method="POST" enctype="multipart/form-data" class="form">
     {% csrf_token %}
     {% bootstrap_form form %}
+    <label for="attenuate">Attenuation:</label>
+    <input type="range" id="attenuate" name="attenuate" min="0.0" max="1.0" step="0.01" value="0.5">
     {% bootstrap_button button_type="submit" button_class='btn-primary' content="Обрати обличчя" %}
 </form>
 {% endblock %}

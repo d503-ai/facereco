@@ -5,6 +5,7 @@ import face_recognition
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+
 def openCVFace(img, path):
     start_time = time.time()
     image = face_recognition.load_image_file(img)
@@ -23,8 +24,6 @@ def openCVFace(img, path):
                 'time': float("{:.4f}".format(time.time() - start_time))}
 
 
-
-
 # New function to detect faces without drawing rectangles and labels
 def detectFaces(img):
     image = face_recognition.load_image_file(img)
@@ -33,7 +32,6 @@ def detectFaces(img):
     faces = face_recognition.face_locations(image)
 
     return faces
-
 
 
 def cropFaces(img, faces, path, expansion_factor=1.5):
@@ -64,4 +62,3 @@ def cropFaces(img, faces, path, expansion_factor=1.5):
             cropped_faces.append(f"cropped_face_{i}_{path}")
 
     return cropped_faces
-

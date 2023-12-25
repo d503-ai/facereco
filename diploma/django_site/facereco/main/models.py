@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
-from .libs.noises import noise
 
 
 class Record(models.Model):
     NOISE_CHOICES = [
-        ('gauss', 'Gauss Noise'),
+        ('gaussian', 'Gauss Noise'),
         ('laplacian', 'Laplacian Noise'),
         ('poisson', 'Poisson Noise'),
         ('impulse', 'Impulse Noise'),
@@ -19,14 +18,6 @@ class Record(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     noise_type = models.CharField(max_length=10, choices=NOISE_CHOICES, default='none')
     noise_applied = models.BooleanField(default=False)
-
-    def apply_noise(self):
-        if self.noise_type != 'none':
-            # Apply noise to the uploaded image based on the selected noise type
-            noise(self.first_image, self.noise_type)
-            noise(self.second_image, self.noise_type)
-            self.noise_applied = True
-            self.save()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

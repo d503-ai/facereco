@@ -1,18 +1,21 @@
+import io
 import os
 import time
 from pathlib import Path
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.core.files import File
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from .forms import RecordForm
+from .libs.noises import apply_noises
 from .models import Record, Neural
 from scipy.spatial import distance
 from .libs.libdlib import dlibFace
 from .libs.libopencv import openCVFace, detectFaces, cropFaces
-from .libs.libsiamese import siameseFaceRecog, siameseFaceDetect
+from .libs.libsiamese import siameseFaceRecog
 
 # Адреса каталогу
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -68,7 +71,6 @@ def index(request):
     # Record.objects.all().delete()
     # if os.path.exists(str(BASE_DIR) + "/main/libs/data/facial_data.json"):
     #    os.remove(str(BASE_DIR) + "/main/libs/data/facial_data.json")
-
     context = {'title': 'Facereco'}
     return render(request, 'main/index.html', context)
 
@@ -97,10 +99,12 @@ def recognize(request):
         if form.is_valid():
             record = form.save(commit=False)
             record.user = request.user
-            record.save()
 
-            # Apply noise based on the selected noise type
-            record.apply_noise()
+            # Extract the noise_attenuation value from the request
+            # noise_attenuation = float(request.POST.get('attenuate'))
+
+            # Save the record with noised images
+            record.save()
 
             return redirect('select-faces', record_id=record.id)
     else:
@@ -249,21 +253,25 @@ def select_faces(request, record_id):
         # Redirect to the result_recon page with the updated Record ID
         return redirect('result-recon', record_id=record.id)
 
-    # Assuming your images are in the static/images/ folder
-    first_image_path = str(BASE_DIR) + "/static/" + str(record.first_image.url)
-    second_image_path = str(BASE_DIR) + "/static/" + str(record.second_image.url)
+    # Apply noise to the first image
+    record.first_image.save(record.first_image.path,
+                            File(io.BytesIO(apply_noises(record.first_image.path, record.noise_type, attenuate=1.0))))
+    # Apply noise to the second image
+    record.second_image.save(record.second_image.path,
+                             File(io.BytesIO(apply_noises(record.second_image.path, record.noise_type, attenuate=1.0))))
+
 
     # Detect faces on the first image
-    faces_first_image = detectFaces(first_image_path)
+    faces_first_image = detectFaces(record.first_image.path)
 
     # Crop faces from the first image
-    cropped_faces_first_image = cropFaces(first_image_path, faces_first_image, record.first_image)
+    cropped_faces_first_image = cropFaces(record.first_image.path, faces_first_image, record.first_image)
 
     # Detect faces on the second image
-    faces_second_image = detectFaces(second_image_path)
+    faces_second_image = detectFaces(record.second_image.path)
 
     # Crop faces from the second image
-    cropped_faces_second_image = cropFaces(second_image_path, faces_second_image, record.second_image)
+    cropped_faces_second_image = cropFaces(record.second_image.path, faces_second_image, record.second_image)
 
     # Pass relevant information to the template context
     context = {

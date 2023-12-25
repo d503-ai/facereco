@@ -1,46 +1,30 @@
+import io
 import cv2
 import numpy as np
+from PIL import Image as PILImage
+from wand.image import Image as WandImage
 
 
-def noise(img, noise_type, strength=0.5):
-    if noise_type == 'gaussian':
-        return apply_gaussian_noise(img, strength)
-    elif noise_type == 'laplacian':
-        return apply_laplacian_noise(img, strength)
-    elif noise_type == 'poisson':
-        return apply_poisson_noise(img, strength)
-    elif noise_type == 'impulse':
-        return apply_impulse_noise(img, strength)
-    else:
-        return img  # No noise applied for unknown/noise_type
+def apply_noises(img_path, noise_type, attenuate=0.5):
+    with WandImage(filename=img_path) as image:
+        # Apply noise to the Wand Image
+        image.noise(noise_type, attenuate=attenuate)
 
+        # Convert Wand Image to PIL Image
+        pil_image = PILImage.open(io.BytesIO(image.make_blob()))
 
-def apply_gaussian_noise(img, strength):
-    row, col, ch = img.shape
-    mean = 0
-    var = 0.1
-    sigma = var ** 0.5
-    gauss = strength * np.random.normal(mean, sigma, (row, col, ch))
-    noisy = np.clip(img + gauss, 0, 255).astype(np.uint8)
-    return noisy
+        # Convert PIL Image to bytes
+        with io.BytesIO() as output:
+            pil_image.save(output, format='JPEG')  # Adjust the format as needed
+            image_bytes = output.getvalue()
 
+        # Convert PIL Image to NumPy array
+        numpy_array = np.array(pil_image)
 
-def apply_laplacian_noise(img, strength):
-    laplacian = cv2.Laplacian(img, cv2.CV_64F)
-    noisy = strength * np.clip(img + laplacian.astype(np.uint8), 0, 255)
-    return noisy
+        try:
+            cv2.imwrite(img_path, cv2.cvtColor(numpy_array, cv2.COLOR_RGB2BGR))
+        except Exception as e:
+            print("Error saving image:", e)
 
-
-def apply_poisson_noise(img, strength):
-    vals = len(np.unique(img))
-    vals = 2 ** np.ceil(np.log2(vals))
-    noisy = strength * np.random.poisson(img * vals) / float(vals)
-    return np.clip(noisy, 0, 255).astype(np.uint8)
-
-
-def apply_impulse_noise(img, strength):
-    noisy = img.copy()
-    num_pixels = int(strength * img.size)
-    coordinates = [np.random.randint(0, i - 1, num_pixels) for i in img.shape]
-    noisy[coordinates] = 255
-    return noisy
+        # Return the PIL Image
+        return image_bytes
