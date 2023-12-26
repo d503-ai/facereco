@@ -8,9 +8,36 @@
 </div>
 <form method="POST" enctype="multipart/form-data" class="form">
     {% csrf_token %}
-    {% bootstrap_form form %}
-    <label for="attenuate">Attenuation:</label>
-    <input type="range" id="attenuate" name="attenuate" min="0.0" max="1.0" step="0.01" value="0.5">
+
+    <!-- Render each form field individually except for 'attenuate' -->
+    {% for field in form %}
+        {% if field.name != 'attenuate' %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="form-group">
+        <label for="attenuate">Attenuation:</label>
+        <input type="range" id="attenuate" name="attenuate" min="0.0" max="1.0" step="0.01" value="0.5" class="form-control-range">
+        <!-- Display the current value of the slider -->
+        <span id="attenuate-value">0.5</span>
+    </div>
+    <script>
+        // Update the displayed value when the slider changes
+        document.getElementById('attenuate').addEventListener('input', function () {
+            document.getElementById('attenuate-value').innerText = this.value;
+        });
+    </script>
+
     {% bootstrap_button button_type="submit" button_class='btn-primary' content="Обрати обличчя" %}
 </form>
 {% endblock %}

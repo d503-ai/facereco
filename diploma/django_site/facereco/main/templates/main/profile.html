@@ -17,6 +17,8 @@
               <h5 class="card-title">
                 <a href="{% url 'record-details' recognition.id %}">{{ recognition.title }}</a>
               </h5>
+              <p class="card-text">Noise Type: {{ recognition.noise_type }}</p>
+              <p class="card-text">Attenuate: {{ recognition.attenuate }}</p>
               <p class="card-text">Created: {{ recognition.created_at|date:'D, d M Y H:i' }}</p>
             </div>
             <div class="card-footer">

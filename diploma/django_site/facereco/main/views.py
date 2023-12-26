@@ -89,6 +89,7 @@ def record_details(request, record_id):
     return render(request, 'main/record_details.html', context)
 
 
+# TODO: ДОДЕЛАТЬ ATTENUATE ПАРАМЕТР И ПЕРЕДАЧУ В ФОРМУ
 @login_required
 def recognize(request):
     context = {'title': 'Recognition'}
@@ -99,9 +100,6 @@ def recognize(request):
         if form.is_valid():
             record = form.save(commit=False)
             record.user = request.user
-
-            # Extract the noise_attenuation value from the request
-            # noise_attenuation = float(request.POST.get('attenuate'))
 
             # Save the record with noised images
             record.save()
@@ -252,14 +250,15 @@ def select_faces(request, record_id):
 
         # Redirect to the result_recon page with the updated Record ID
         return redirect('result-recon', record_id=record.id)
-
-    # Apply noise to the first image
-    record.first_image.save(record.first_image.path,
-                            File(io.BytesIO(apply_noises(record.first_image.path, record.noise_type, attenuate=1.0))))
-    # Apply noise to the second image
-    record.second_image.save(record.second_image.path,
-                             File(io.BytesIO(apply_noises(record.second_image.path, record.noise_type, attenuate=1.0))))
-
+    if record.noise_type != "none":
+        # Apply noise to the first image
+        record.first_image.save(record.first_image.path,
+                                File(io.BytesIO(apply_noises(record.first_image.path, record.noise_type, record.attenuate))))
+        # Apply noise to the second image
+        record.second_image.save(record.second_image.path,
+                                 File(io.BytesIO(apply_noises(record.second_image.path, record.noise_type, record.attenuate))))
+    else:
+        pass
 
     # Detect faces on the first image
     faces_first_image = detectFaces(record.first_image.path)
