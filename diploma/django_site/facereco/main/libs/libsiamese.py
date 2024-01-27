@@ -57,27 +57,3 @@ def siameseFaceRecog(img, name, path):
     dlib.save_image(image, str(BASE_DIR.parent.parent) + "/static/images/" + path)
     return {'path': path, 'facedesc': face_desc, 'faces': len(bboxes),
             'time': float("{:.4f}".format(time.time() - start_time))}
-
-
-def siameseFaceDetect(img, path):
-    start_time = time.time()
-    image = io.imread(img)
-    face_detector = FaceDetectorDlib(model_type="hog")
-    bboxes = face_detector.detect_faces(image)
-    if bboxes:
-        for i, bbox in enumerate(bboxes):
-            rectangle = dlib.rectangle(bbox[0], bbox[1], bbox[2], bbox[3])
-            shape = predictor(image, rectangle)
-            shape2 = face_utils.shape_to_np(shape)
-            (x, y, w, h) = face_utils.rect_to_bb(rectangle)
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(image, "Face #{}".format(i + 1), (x + 30, y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            for (x, y) in shape2:
-                cv2.circle(image, (x, y), 1, (0, 0, 255), 2)
-    else:
-        return {'path': path, 'faces': len(bboxes),
-                'time': float("{:.4f}".format(time.time() - start_time))}
-    dlib.save_image(image, str(BASE_DIR.parent.parent) + "/static/images/" + path)
-    return {'path': path, 'faces': len(bboxes),
-            'time': float("{:.4f}".format(time.time() - start_time))}

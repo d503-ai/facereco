@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block title %}Вихід{% endblock title %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Вихід</h2>
+    <p>Ви впевнені, що хочете вийти?</p>
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_button button_type="submit" button_class='btn-primary' content="Вийти" %}
+    </form>
+  </div>
+{% endblock %}

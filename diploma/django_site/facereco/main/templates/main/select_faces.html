@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if cropped_faces_first_image and cropped_faces_second_image %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h2 class="card-title">Обличчя з першого зображення</h2>
+                                {% for face_path in cropped_faces_first_image %}
+                                    {% with "images/"|add:face_path as full_path %}
+                                        <img src="{% static full_path %}" alt="{{ face_path }}" class="img-fluid mb-2"/>
+                                    {% endwith %}
+                                {% endfor %}
+                                <select name="selected_first_image" class="form-select mb-3">
+                                    {% for face_path in cropped_faces_first_image %}
+                                        {% with forloop.counter as i %}
+                                            <option value="{{ face_path }}">Обличчя {{ i }}</option>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h2 class="card-title">Обличчя з другого зображення</h2>
+                                {% for face_path in cropped_faces_second_image %}
+                                    {% with "images/"|add:face_path as full_path %}
+                                        <img src="{% static full_path %}" alt="{{ face_path }}" class="img-fluid mb-2"/>
+                                    {% endwith %}
+                                {% endfor %}
+                                <select name="selected_second_image" class="form-select mb-3">
+                                    {% for face_path in cropped_faces_second_image %}
+                                        {% with forloop.counter as i %}
+                                            <option value="{{ face_path }}">Обличчя {{ i }}</option>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Розпізнати</button>
+                </div>
+            </form>
+        {% else %}
+            <div class="text-center my-md-3">
+                <p>Не було знайдено жодних обличь</p>
+                <a class="btn btn-outline-secondary" href="{% url 'home' %}">Повернутися додому</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

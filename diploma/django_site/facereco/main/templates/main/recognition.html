@@ -1,23 +1,41 @@
 {% extends 'base.html' %}
-{% load django_bootstrap5 %}
+{% load bootstrap5 %}
 
 {% block content %}
-<div>
-    Для розпізнання обличчя оберіть два зображення.
-    <br>
-    Обмеження щодо завдання:
-    <ul>
-        <li>1. Кількість обличчя - 1.</li>
-        <li>2. Якщо на зображені нема обличь або обличь більш ніж 1, то буде виконано виключення.</li>
-    </ul>
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Для розпізнання обличчя оберіть два зображення.</h3>
+
+    <form method="POST" enctype="multipart/form-data" class="mx-auto col-md-6">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name != 'attenuate' %}
+                <div class="mb-3">
+                    <label сlass="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text text-muted">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="mb-3">
+            <label for="attenuate" class="form-label">Attenuation:</label>
+            <input type="range" id="attenuate" name="attenuate" min="0.0" max="5.0" step="0.01" value="0.0" class="form-range">
+            <span id="attenuate-value" class="mt-2 d-block text-center">0.0</span>
+        </div>
+        <script>
+            document.getElementById('attenuate').addEventListener('input', function () {
+                document.getElementById('attenuate-value').innerText = this.value;
+            });
+        </script>
+
+        <div class="text-center">
+            {% bootstrap_button button_type="submit" button_class='btn-primary' content="Обрати обличчя" %}
+        </div>
+    </form>
 </div>
-<form  method="POST" enctype="multipart/form-data" class="form">
-    {% csrf_token %}
-
-    {% bootstrap_form form %}
-
-    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Виконати" %}
-</form>
-
-
 {% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Запис {{ record.title }}</h2>
+
+    {% for neural in neurals %}
+      <div class="text-center">
+        <h1>{{ neural.title }}</h1>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+          <div>
+            <img src="{{ neural.recognition_image_1.url }}" height="250" class="img-responsive"/>
+          </div>
+        </div>
+        <div class="mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+          <div>
+            <img src="{{ neural.recognition_image_2.url }}" height="250" class="img-responsive"/>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <p>Час виконання: {{ neural.time }} seconds</p>
+        <p>Евклидова відстань: {{ neural.euclidian_distance }}</p>
+      </div>
+    {% endfor %}
+
+    <br>
+    <table class="table table-sm" >
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Шкидкість</th>
+          <th scope="col">Евклідова відстань</th>
+          <th scope="col">Результат</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for neural in neurals %}
+        <tr>
+          <th scope="row">{{ neural.title }}</th>
+          <td>{{ neural.time }}</td>
+          <th>{{ neural.euclidian_distance }}</th>
+          {% if neural.euclidian_distance <= 0.6 %}
+              <td>Однакова людина</td>
+          {% else %}
+              <td>Різні люди</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br>
+    <div class="text-center my-md-3 pl-md-3">
+      <a class="btn btn-outline-secondary" href="{% url 'home' %}">Повернутися додому</a>
+    </div>
+
+  </div>
+{% endblock content %}

@@ -2,23 +2,14 @@ from django import forms
 from .models import Record, Neural
 
 
-class ImageForm(forms.ModelForm):
+class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = [
-            'first_image',
-            'second_image'
-        ]
+        fields = ['title', 'first_image', 'second_image', 'noise_type', 'attenuate']
 
 
 class NeuralForm(forms.ModelForm):
     class Meta:
         model = Neural
-        fields = [
-            'title',
-            'recognition_image_1',
-            'recognition_image_2',
-            'detect_image',
-            'time',
-            'euclidian_distance',
-        ]
+        fields = ['title', 'record', 'recognition_image_1', 'recognition_image_2', 'faces',
+                  'euclidian_distance', 'time']

@@ -1,6 +1,6 @@
 {% load static %}
 {# Load the tag library #}
-{% load django_bootstrap5 %}
+{% load bootstrap5 %}
 
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
@@ -23,18 +23,17 @@
             <div class="d-flex flex-wrap align-items-center justify-content-center">
                 <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0">
                     <img class="bi me-2" width="32" height="32" src="{% static 'images/icons/bezier.svg' %}"/>
-
                 </a>
                 <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                    <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 link-dark">Додому</a></li>
+                  {% if user.is_authenticated %}
                     <li class="nav-item"><a href="{% url 'recognize' %}" class="nav-link px-2 link-dark">Розпізнання обличчя</a></li>
-                    <li class="nav-item"><a href="{% url 'detection' %}" class="nav-link px-2 link-dark">Знаходження обличчя</a>
-                    </li>
+                    <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link px-2 link-dark">Профіль</a></li>
+                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link px-2 link-dark">Вийти</a></li>
+                  {% else %}
+                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link px-2 link-dark">Авторизуватися</a></li>
+                    <li class="nav-item"><a href="{% url 'register' %}" class="nav-link px-2 link-dark">Зареєструватися</a></li>
+                  {% endif %}
                 </ul>
-                <!---<div class="col-md-3 text-end">
-                    <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                    <button type="button" class="btn btn-primary">Sign-up</button>
-                </div>--->
             </div>
         </div>
     </header>
