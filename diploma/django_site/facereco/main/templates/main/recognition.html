@@ -2,42 +2,40 @@
 {% load bootstrap5 %}
 
 {% block content %}
-<div>
-    Для розпізнання обличчя оберіть два зображення.
-    <br><br>
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Для розпізнання обличчя оберіть два зображення.</h3>
+
+    <form method="POST" enctype="multipart/form-data" class="mx-auto col-md-6">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name != 'attenuate' %}
+                <div class="mb-3">
+                    <label сlass="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text text-muted">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="mb-3">
+            <label for="attenuate" class="form-label">Attenuation:</label>
+            <input type="range" id="attenuate" name="attenuate" min="0.0" max="5.0" step="0.01" value="0.0" class="form-range">
+            <span id="attenuate-value" class="mt-2 d-block text-center">0.0</span>
+        </div>
+        <script>
+            document.getElementById('attenuate').addEventListener('input', function () {
+                document.getElementById('attenuate-value').innerText = this.value;
+            });
+        </script>
+
+        <div class="text-center">
+            {% bootstrap_button button_type="submit" button_class='btn-primary' content="Обрати обличчя" %}
+        </div>
+    </form>
 </div>
-<form method="POST" enctype="multipart/form-data" class="form">
-    {% csrf_token %}
-
-    <!-- Render each form field individually except for 'attenuate' -->
-    {% for field in form %}
-        {% if field.name != 'attenuate' %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text|safe }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endfor %}
-
-    <div class="form-group">
-        <label for="attenuate">Attenuation:</label>
-        <input type="range" id="attenuate" name="attenuate" min="0.0" max="1.0" step="0.01" value="0.5" class="form-control-range">
-        <!-- Display the current value of the slider -->
-        <span id="attenuate-value">0.5</span>
-    </div>
-    <script>
-        // Update the displayed value when the slider changes
-        document.getElementById('attenuate').addEventListener('input', function () {
-            document.getElementById('attenuate-value').innerText = this.value;
-        });
-    </script>
-
-    {% bootstrap_button button_type="submit" button_class='btn-primary' content="Обрати обличчя" %}
-</form>
 {% endblock %}

@@ -16,6 +16,10 @@ def openCVFace(img, path):
     encodings = face_recognition.face_encodings(image)
 
     if faces:
+        for i, face in enumerate(faces):
+            cv2.rectangle(image, (face[3], face[0]), (face[1], face[2]), (255, 0, 0), 2)
+            cv2.putText(image, "Face #{}".format(i + 1), (face[3] + 30, face[0] - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         cv2.imwrite(str(BASE_DIR) + "/static/images/" + path, image)
         return {'path': path, 'facedesc': encodings, 'faces': len(faces),
                 'time': float("{:.4f}".format(time.time() - start_time))}
@@ -34,7 +38,7 @@ def detectFaces(img):
     return faces
 
 
-def cropFaces(img, faces, path, expansion_factor=1.5):
+def cropFaces(record_id, img, faces, path, expansion_factor=1.5):
     image = face_recognition.load_image_file(img)
     cropped_faces = []
 
@@ -56,9 +60,9 @@ def cropFaces(img, faces, path, expansion_factor=1.5):
 
             # Save the resized face image
             cv2.imwrite(
-                str(BASE_DIR) + f"/static/images/cropped_face_{i}_{path}",
+                str(BASE_DIR) + f"/static/images/cropped_face_{record_id}_{i}_{path}",
                 cv2.cvtColor(resized_face, cv2.COLOR_RGB2BGR),
             )
-            cropped_faces.append(f"cropped_face_{i}_{path}")
+            cropped_faces.append(f"cropped_face_{record_id}_{i}_{path}")
 
     return cropped_faces

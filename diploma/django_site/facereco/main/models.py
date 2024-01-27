@@ -19,7 +19,7 @@ class Record(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     noise_type = models.CharField(max_length=10, choices=NOISE_CHOICES, default='none')
     noise_applied = models.BooleanField(default=False)
-    attenuate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)])
+    attenuate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

@@ -27,11 +27,11 @@
                 <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                   {% if user.is_authenticated %}
                     <li class="nav-item"><a href="{% url 'recognize' %}" class="nav-link px-2 link-dark">Розпізнання обличчя</a></li>
-                    <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link px-2 link-dark">Profile</a></li>
-                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link px-2 link-dark">Log Out</a></li>
+                    <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link px-2 link-dark">Профіль</a></li>
+                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link px-2 link-dark">Вийти</a></li>
                   {% else %}
-                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link px-2 link-dark">Log In</a></li>
-                    <li class="nav-item"><a href="{% url 'register' %}" class="nav-link px-2 link-dark">Register</a></li>
+                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link px-2 link-dark">Авторизуватися</a></li>
+                    <li class="nav-item"><a href="{% url 'register' %}" class="nav-link px-2 link-dark">Зареєструватися</a></li>
                   {% endif %}
                 </ul>
             </div>

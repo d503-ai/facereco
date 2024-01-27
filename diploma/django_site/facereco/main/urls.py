@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
-
+from django.conf.urls import (
+handler400, handler403, handler404, handler500
+)
 
 urlpatterns = [
     path('', views.index, name='home'),
@@ -14,4 +16,3 @@ urlpatterns = [
     path('select_faces/<int:record_id>/', views.select_faces, name='select-faces'),
     path('delete_record/<int:record_id>/', views.delete_record, name='delete-record'),
 ]
-

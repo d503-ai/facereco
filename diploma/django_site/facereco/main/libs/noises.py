@@ -7,7 +7,8 @@ from wand.image import Image as WandImage
 
 def apply_noises(img_path, noise_type, attenuate=0.5):
     with WandImage(filename=img_path) as image:
-        # Apply noise to the Wand Image
+        # Накласти обранний шум noise_type на зображення image
+        # Noise_type може бути 'gaussian', 'laplacian', 'poisson', 'impulse'
         image.noise(noise_type, attenuate=attenuate)
 
         # Convert Wand Image to PIL Image
@@ -21,10 +22,7 @@ def apply_noises(img_path, noise_type, attenuate=0.5):
         # Convert PIL Image to NumPy array
         numpy_array = np.array(pil_image)
 
-        try:
-            cv2.imwrite(img_path, cv2.cvtColor(numpy_array, cv2.COLOR_RGB2BGR))
-        except Exception as e:
-            print("Error saving image:", e)
+        cv2.imwrite(img_path, cv2.cvtColor(numpy_array, cv2.COLOR_RGB2BGR))
 
         # Return the PIL Image
         return image_bytes

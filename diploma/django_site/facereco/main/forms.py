@@ -11,5 +11,5 @@ class RecordForm(forms.ModelForm):
 class NeuralForm(forms.ModelForm):
     class Meta:
         model = Neural
-        fields = ['title', 'record', 'recognition_image_1', 'recognition_image_2', 'detect_image', 'faces',
+        fields = ['title', 'record', 'recognition_image_1', 'recognition_image_2', 'faces',
                   'euclidian_distance', 'time']

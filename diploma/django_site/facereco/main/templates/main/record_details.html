@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="container mt-5">
-    <h2 class="mb-4">{{ record.title }} Details</h2>
+    <h2 class="mb-4">Запис {{ record.title }}</h2>
 
     {% for neural in neurals %}
       <div class="text-center">
@@ -21,8 +21,8 @@
         </div>
       </div>
       <div class="text-center">
-        <p>Time taken: {{ neural.time }} seconds</p>
-        <p>Euclidean distance: {{ neural.euclidian_distance }}</p>
+        <p>Час виконання: {{ neural.time }} seconds</p>
+        <p>Евклидова відстань: {{ neural.euclidian_distance }}</p>
       </div>
     {% endfor %}
 
@@ -31,9 +31,9 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Time</th>
-          <th scope="col">Euclidean Distance</th>
-          <th scope="col">Result</th>
+          <th scope="col">Шкидкість</th>
+          <th scope="col">Евклідова відстань</th>
+          <th scope="col">Результат</th>
         </tr>
       </thead>
       <tbody>
@@ -43,9 +43,9 @@
           <td>{{ neural.time }}</td>
           <th>{{ neural.euclidian_distance }}</th>
           {% if neural.euclidian_distance <= 0.6 %}
-              <td>Same person</td>
+              <td>Однакова людина</td>
           {% else %}
-              <td>Different persons</td>
+              <td>Різні люди</td>
           {% endif %}
         </tr>
         {% endfor %}
@@ -53,7 +53,7 @@
     </table>
     <br>
     <div class="text-center my-md-3 pl-md-3">
-      <a class="btn btn-outline-secondary" href="{% url 'home' %}">Go back home</a>
+      <a class="btn btn-outline-secondary" href="{% url 'home' %}">Повернутися додому</a>
     </div>
 
   </div>

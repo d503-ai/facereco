@@ -50,14 +50,17 @@ def profile(request):
 
 def login_view(request):
     if request.method == 'POST':
-        # Use Django's built-in authentication to log in the user
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse('profile'))
-    form = AuthenticationForm()
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('profile'))
+    else:
+        form = AuthenticationForm()
+
     return render(request, 'registration/login.html', {'form': form})
 
 
@@ -67,10 +70,6 @@ def index(request):
     """
     Home page
     """
-    # Видатили усі записи на початку роботи додатку
-    # Record.objects.all().delete()
-    # if os.path.exists(str(BASE_DIR) + "/main/libs/data/facial_data.json"):
-    #    os.remove(str(BASE_DIR) + "/main/libs/data/facial_data.json")
     context = {'title': 'Facereco'}
     return render(request, 'main/index.html', context)
 
@@ -81,7 +80,7 @@ def record_details(request, record_id):
 
     # Ensure that the user can only view their own records
     if request.user != record.user:
-        return HttpResponseForbidden("You don't have permission to view this record.")
+        return HttpResponseForbidden("Ви не авторизовані, щоб переглядати цей запис.")
 
     neurals = Neural.objects.filter(record=record)
 
@@ -89,7 +88,6 @@ def record_details(request, record_id):
     return render(request, 'main/record_details.html', context)
 
 
-# TODO: ДОДЕЛАТЬ ATTENUATE ПАРАМЕТР И ПЕРЕДАЧУ В ФОРМУ
 @login_required
 def recognize(request):
     context = {'title': 'Recognition'}
@@ -101,10 +99,17 @@ def recognize(request):
             record = form.save(commit=False)
             record.user = request.user
 
-            # Save the record with noised images
-            record.save()
+            try:
+                # Save the record with noised images
+                record.save()
 
-            return redirect('select-faces', record_id=record.id)
+                # Redirect to the select-faces page with the updated Record ID
+                return redirect('select-faces', record_id=record.id)
+
+            except Exception as e:
+                # Delete the record if an exception occurs
+                record.delete()
+                context.update({'error_message': f"Error processing images: {str(e)}"})
     else:
         form = RecordForm()
 
@@ -177,7 +182,7 @@ def resultRecon(request, record_id):
             record=rec,
             recognition_image_1=vggimp[0]['path'],
             recognition_image_2=vggimp[1]['path'],
-            euclidian_distance=vggimp[2] + 0.15,
+            euclidian_distance=vggimp[2] + 0.05,
             time=vggimp[3],
             faces=vggimp[0]['faces'],
             user=user  # Set the user to the currently logged-in user
@@ -200,24 +205,24 @@ def reconExec(rec, mode):
     start_time = time.time()
     if mode == "Dlib":
         data1 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
-                         "dlib_recon_1.jpg")
+                         f"dlib_recon_1_{rec.id}.jpg")
         data2 = dlibFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
-                         "dlib_recon_2.jpg")
+                         f"dlib_recon_2_{rec.id}.jpg")
     elif mode == "OpenCV":
         data1 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
-                           "opencv_recon_1.jpg")
+                           f"opencv_recon_1_{rec.id}.jpg")
         data2 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
-                           "opencv_recon_2.jpg")
+                           f"opencv_recon_2_{rec.id}.jpg")
     elif mode == "VGGImp":
         data1 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.first_image.url),
-                           "vggimp_recon_1.jpg")
+                           f"vggimp_recon_1_{rec.id}.jpg")
         data2 = openCVFace(str(BASE_DIR) + "/static/" + str(rec.second_image.url),
-                           "vggimp_recon_2.jpg")
+                           f"vggimp_recon_2_{rec.id}.jpg")
     else:
         data1 = siameseFaceRecog(str(BASE_DIR) + "/static/" + str(rec.first_image.url), "snn_01",
-                                 "snn_recon_1.jpg")
+                                 f"snn_recon_1_{rec.id}.jpg")
         data2 = siameseFaceRecog(str(BASE_DIR) + "/static/" + str(rec.second_image.url), "snn_02",
-                                 "snn_recon_2.jpg")
+                                 f"snn_recon_2_{rec.id}.jpg")
     if data1 and data2:
         # Розрахунок евклидової відстані
         try:
@@ -234,7 +239,8 @@ def reconExec(rec, mode):
 def select_faces(request, record_id):
     # Get the Record object based on the record_id
     record = get_object_or_404(Record, id=record_id)
-
+    cropped_faces_first_image = []
+    cropped_faces_second_image = []
     if request.method == 'POST':
         selected_first_image = request.POST.get('selected_first_image')
         selected_second_image = request.POST.get('selected_second_image')
@@ -250,27 +256,40 @@ def select_faces(request, record_id):
 
         # Redirect to the result_recon page with the updated Record ID
         return redirect('result-recon', record_id=record.id)
-    if record.noise_type != "none":
-        # Apply noise to the first image
-        record.first_image.save(record.first_image.path,
-                                File(io.BytesIO(apply_noises(record.first_image.path, record.noise_type, record.attenuate))))
-        # Apply noise to the second image
-        record.second_image.save(record.second_image.path,
-                                 File(io.BytesIO(apply_noises(record.second_image.path, record.noise_type, record.attenuate))))
-    else:
-        pass
 
-    # Detect faces on the first image
-    faces_first_image = detectFaces(record.first_image.path)
+    if record.first_image and record.second_image:
+        if record.noise_type != "none":
+            try:
+                # Apply noise to the first image
+                record.first_image.save(record.first_image.path,
+                                        File(io.BytesIO(
+                                            apply_noises(record.first_image.path, record.noise_type,
+                                                         record.attenuate))))
+                # Apply noise to the second image
+                record.second_image.save(record.second_image.path,
+                                         File(io.BytesIO(
+                                             apply_noises(record.second_image.path, record.noise_type,
+                                                          record.attenuate))))
+            except:
+                pass
+        else:
+            pass
 
-    # Crop faces from the first image
-    cropped_faces_first_image = cropFaces(record.first_image.path, faces_first_image, record.first_image)
+        # Detect faces on the first image
+        faces_first_image = detectFaces(record.first_image.path)
 
-    # Detect faces on the second image
-    faces_second_image = detectFaces(record.second_image.path)
+        # Crop faces from the first image
+        cropped_faces_first_image = cropFaces(record.id, record.first_image.path, faces_first_image, record.first_image)
 
-    # Crop faces from the second image
-    cropped_faces_second_image = cropFaces(record.second_image.path, faces_second_image, record.second_image)
+        # Detect faces on the second image
+        faces_second_image = detectFaces(record.second_image.path)
+
+        # Crop faces from the second image
+        cropped_faces_second_image = cropFaces(record.id, record.second_image.path, faces_second_image,
+                                               record.second_image)
+    #
+    if not cropped_faces_first_image or not cropped_faces_second_image:
+        record.delete()
 
     # Pass relevant information to the template context
     context = {
